@@ -1,0 +1,40 @@
+screen layout:
+
+<Image of Character>
+<ul>
+    <li> Choice 1
+    <li> Choice 2
+    <li> Choice 3 
+    <li> Choice 4
+</ul>
+
+characters[
+    {
+        name:Kent Brockman,
+        image:images/kentBrockman.jpg,
+        choices:[Kent Brockman,Troy McClure,Dr. Hibert,Mr. Burns]
+    },
+    {
+        name:Bumblebee Man,
+        image:images/bumblebeeman.jpg,
+        choices:[Kent Brockman,Troy McClure,Dr. Hibert,Bumblebeeman]
+    }
+]
+
+$(document).ready(function(){ 
+    
+    populate charNameArr
+    for(length of characters){
+        charNameArr.push(characters[i].name)
+    }
+
+    select random question
+    quest = Math.floor(Math.random() * charNameArr.length)
+    
+    load question where question[i].name = quest
+
+    write characters[i].image to screen
+    write characters[i].choice[0 through 4] to screen
+    set time interval -> intervalId = setTimeout(outOfTime(), 15 * 1000);
+
+})

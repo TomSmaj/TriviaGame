@@ -1,0 +1,17 @@
+.container-fluid{
+    height: 100%;
+    width: 70%;
+}
+
+.choiceRow{
+    height: 50px;
+}
+
+.charRow{
+    height: 500px;
+}
+
+/*img{
+    width: 321px;
+    height: 500px;
+}*/
