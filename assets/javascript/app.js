@@ -27,15 +27,12 @@ $(document).ready(function(){
 
     let charArr = [];
 
-    function populateCharArr(){
-        for(i = 0; i < characters.length; i++){
-            charArr.push(characters[i].name);
-        }
-    }
-
     function setUp(){
         if(charArr.length === 0){
             populateCharArr();
+        }
+        else if(charArr.length ===0){
+            playerWins();
         }
         let rando = Math.floor(Math.random() * charArr.length);
         currentChar = charArr[rando];
@@ -45,11 +42,57 @@ $(document).ready(function(){
                 currentChar = characters[key];
             }
         }
-        console.log("current char: " + currentChar);
-        console.log(currentChar.image);
         $(".characterImage").html("<img src = \"" + currentChar.image + "\"/>");
-        //let choiceArr = randomize(currentCharr.choices);
-        
+        let choiceArr = randomize(currentChar.choices);
+        printChoices(choiceArr);   
+    }
+
+    function playerWins(){
+        console.log("Player wins!");
+    }
+
+    function populateCharArr(){
+        for(i = 0; i < characters.length; i++){
+            charArr.push(characters[i].name);
+        }
+    }
+
+    function randomize(arr){
+        s = "";
+        let nuArr = [];
+        while(s.length < 4){
+            let temp = Math.floor(Math.random() * 4);
+            if(!s.includes(temp)){
+                s += temp;
+                nuArr.push(arr[temp]);
+            }
+        }
+        return nuArr;
+    }
+
+    function checkAnswer(answer){
+        if(time < timeLimit && answer === currentChar.name){
+            clearInterval(intervalID);
+            timerRunning = false;
+             $(".info").html("info: <strong>Corect! Press the start button to proceed to the next character</strong>");
+        }
+        else if(answer !== currentChar.name){
+            clearInterval(intervalID);
+            timerRunning = false;
+            $(".info").html("info: <strong>Incorect! You lose :(</strong>");
+        }
+
+    }
+
+    function printChoices(arr){
+        for(i = 0; i < 4; i++){
+            $(".choiceBtn" + (i+1)).text(arr[i]);
+            $(".choiceBtn" + (i+1)).on("click", function (){
+                if(timerRunning){
+                    checkAnswer($(this).text());
+                }
+            })
+        }   
     }
 
     function gameOver(){
@@ -66,6 +109,7 @@ $(document).ready(function(){
         $(".timer").html("time: <strong>" + timeConverter(time) + "</strong>");
         if(time === timeLimit){
             clearInterval(intervalID);
+            timerRunning = false;
             gameOver();
         }
     }
@@ -91,7 +135,6 @@ $(document).ready(function(){
 
     $(".next-start").on("click", function(){
         if(!timerRunning){
-            console.log("clicked");
             setUp();
             startTimer();
             timerRunning = true;
