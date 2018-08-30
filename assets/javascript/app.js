@@ -1,8 +1,11 @@
 $(document).ready(function(){
     let timerRunning = false;
     let time = 0;
-    timeLimit = 15;
+    timeLimit = 20;
     let intervalID;
+    let currentChar;
+
+    let charArr = [];
 
     //character object array
     let characters = [
@@ -23,16 +26,12 @@ $(document).ready(function(){
         }
     ];
 
-    let currentChar;
+   
 
-    let charArr = [];
-
+    //writes the image to the screen
     function setUp(){
         if(charArr.length === 0){
             populateCharArr();
-        }
-        else if(charArr.length ===0){
-            playerWins();
         }
         let rando = Math.floor(Math.random() * charArr.length);
         currentChar = charArr[rando];
@@ -47,19 +46,25 @@ $(document).ready(function(){
         printChoices(choiceArr);   
     }
 
+    //sent here when the player guesses the last character correctly
+    //when the player pushes start at this point, the game restarts
     function playerWins(){
-        console.log("Player wins!");
+        $(".info").html("info: <strong>You win!</strong>");
     }
 
+    //called when the game starts, takes each character name from the object array
     function populateCharArr(){
         for(i = 0; i < characters.length; i++){
             charArr.push(characters[i].name);
         }
     }
 
+    //is handed the array of guess choices from the current character object, put in a random order, and returned
     function randomize(arr){
         s = "";
         let nuArr = [];
+        //random numbers between 0 and 3 are added to the string s
+        //if a number has already been added it can't be added again, to prevent duplicates
         while(s.length < 4){
             let temp = Math.floor(Math.random() * 4);
             if(!s.includes(temp)){
@@ -70,13 +75,34 @@ $(document).ready(function(){
         return nuArr;
     }
 
+    //handed the array containing choices and then sets each to the text of each button
+    function printChoices(arr){
+        for(i = 0; i < 4; i++){
+            $(".choiceBtn" + (i+1)).text(arr[i]);
+        }   
+    }
+
+    $(".choice").on("click", function (){
+        if(timerRunning){
+            let q = $(this).text();
+            checkAnswer(q);
+        }
+    })
+
+    //this is where the program goes when a user makes a their answer selection
     function checkAnswer(answer){
-        if(time < timeLimit && answer === currentChar.name){
+        if(answer === currentChar.name){
             clearInterval(intervalID);
             timerRunning = false;
-             $(".info").html("info: <strong>Corect! Press the start button to proceed to the next character</strong>");
+             if(charArr.length === 0){
+                 playerWins();
+                }
+             else{
+                resetVariables();
+             }
         }
-        else if(answer !== currentChar.name){
+        //if the answer is not correct, then the player loses
+        else{
             clearInterval(intervalID);
             timerRunning = false;
             $(".info").html("info: <strong>Incorect! You lose :(</strong>");
@@ -84,36 +110,29 @@ $(document).ready(function(){
 
     }
 
-    function printChoices(arr){
-        for(i = 0; i < 4; i++){
-            $(".choiceBtn" + (i+1)).text(arr[i]);
-            $(".choiceBtn" + (i+1)).on("click", function (){
-                if(timerRunning){
-                    checkAnswer($(this).text());
-                }
-            })
-        }   
-    }
-
-    function gameOver(){
+    function timeUp(){
         $(".info").html("info: <strong>Time's up. You lose :(</strong>");
     }
 
+    //sets a time interval in which incrementTime is visited every 1 second
     function startTimer(){
         intervalID = setInterval(incrementTime, 1000);
         return;
     }
 
+    //increments time variable, updates timer on screen, checks if the time limit has been reached
     function incrementTime(){
-        time += 1;
+        time -= 1;
         $(".timer").html("time: <strong>" + timeConverter(time) + "</strong>");
-        if(time === timeLimit){
+        //if the time limits has been reached then the player loses
+        if(time === 0){
             clearInterval(intervalID);
             timerRunning = false;
-            gameOver();
+            timeUp();
         }
     }
 
+    //converts the time variable to a 00:00 format, though the time never reaches the minute mark 
     function timeConverter(t) {
         var minutes = Math.floor(t / 60);
         var seconds = t - (minutes * 60);
@@ -133,11 +152,19 @@ $(document).ready(function(){
         return minutes + ":" + seconds;
     }
 
+    function resetVariables(){
+        time = timeLimit;
+        $(".info").html("info: ");
+        $(".timer").html("time: <strong>"+ timeConverter(timeLimit) +"</strong>");
+        setUp();
+        startTimer();
+        timerRunning = true;
+    }
+    //when the start button is pressed, and the timer is not running, the game/next round is set into motion.
     $(".next-start").on("click", function(){
         if(!timerRunning){
-            setUp();
-            startTimer();
-            timerRunning = true;
+            cameFrom = "start";
+            resetVariables();    
         }
     })
 })
