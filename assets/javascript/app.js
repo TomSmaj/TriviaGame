@@ -49,7 +49,7 @@ $(document).ready(function(){
     //sent here when the player guesses the last character correctly
     //when the player pushes start at this point, the game restarts
     function playerWins(){
-        $(".info").html("info: <strong>You win!</strong>");
+        $(".info").html("info: <strong>You win! Press 'Start' to play again!</strong>");
     }
 
     //called when the game starts, takes each character name from the object array
