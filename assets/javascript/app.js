@@ -227,6 +227,7 @@ $(document).ready(function(){
     //when the start button is pressed, and the timer is not running, the game/next round is set into motion.
     $(".next-start").on("click", function(){
         if(!timerRunning && !gameGoing){
+            wins = 0;
             gameGoing = true;
             time = timeLimit;
             $(".info").html("info: ");
