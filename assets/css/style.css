@@ -4,6 +4,11 @@
     font-family: 'Rock Salt';
 }
 
+body{
+    background-image: url("../images/simpsons-background-2.jpg");
+    background-position: center;
+}
+
 .container-fluid{
     position: relative;
     height: 100%;
@@ -15,6 +20,7 @@
     border-width: 7px;
     border-color: #ffc107;
     border-radius: 10px;
+    background-color: white;
 }
 
 .choiceRow{
@@ -28,9 +34,18 @@
 img{
     width: 321px;
     height: 500px;
-    /*margin-left: auto;
-    margin-right: auto; */
-    left: 200px;
+    margin-left: 200px;
+    margin-right: 200px; 
+    /*left: 200px;*/
+    position: absolute;
+}
+
+endgameImg{
+    width: 540px;
+    height: 300x;
+    margin-left: 100px;
+    margin-right: 100px; 
+    /*left: 200px;*/
     position: absolute;
 }
 
@@ -66,6 +81,7 @@ button{
 
 
 .characterImage{
+    position: relative;
     width: 100%;
     margin-left: auto;
     margin-right: auto;

@@ -1,18 +1,20 @@
 $(document).ready(function(){
     let timerRunning = false;
     let time = 0;
-    timeLimit = 20;
+    timeLimit = 15;
     let intervalID;
     let currentChar;
+    let wins = 0;
+    gameGoing = false;
 
     let charArr = [];
 
     //character object array
     let characters = [
         {
-            name:"Milhouse Vanhouten",
-            image:"assets/images/milhouse.png",
-            choices:["Ralph Wiggum", "Milhouse Vanhouten", "Nelson Muntz", "Martin Prince"]
+            name:"Moe Szyslak",
+            image:"assets/images/moe.png",
+            choices:["Moe Szyslak", "Barney Gumble", "Lenny Leonard", "Kearney Zickowitz"]
         },
         {
             name:"Principal Skinner",
@@ -23,6 +25,41 @@ $(document).ready(function(){
             name:"Lionel Hutz",
             image:"assets/images/lionel-hutz.png",
             choices:["Lionel Hutz", "Kent Brockman", "Abe Simpson", "Carl Carlson"]
+        },
+        {
+            name:"Ned Flanders",
+            image:"assets/images/ned-flanders.png",
+            choices:["Ned Flanders", "Waylon Smithers", "Herbert Powell", "Troy McClure"]
+        },
+        {
+            name:"Edna Krabappel",
+            image:"assets/images/edna-krabappel.png",
+            choices:["Edna Krabappel", "Marge Simpson", "Helen Lovejoy", "Selma Bouvier"]
+        },
+        {
+            name:"Ralph Wiggum",
+            image:"assets/images/ralph-wiggum.png",
+            choices:["Ralph Wiggum", "Jimbo Jones", "Wendell Borton", "Artie Ziff"]
+        },
+        {
+            name:"Mr. Burns",
+            image:"assets/images/mr-burns.jpg",
+            choices:["Mr. Burns", "Mr. Grimes", "Mr. Smithers", "Mr. Szyslak"]
+        },
+        {
+            name:"Maude Flanders",
+            image:"assets/images/maude.png",
+            choices:["Maude Flanders", "Elizabeth Hoover", "Patty Bouvier", "Emily Winthrop"]
+        },
+        {
+            name:"Sideshow Mel",
+            image:"assets/images/sideshow-mel.png",
+            choices:["Sideshow Mel", "Sideshow Bob", "Krusty the Clown", "Gabbo the Clown"]
+        },
+        {
+            name:"Selma Bouvier",
+            image:"assets/images/selma.png",
+            choices:["Selma Bouvier", "Lunchlady Doris", "Luann Van Houten", "Agnes Skinner"]
         }
     ];
 
@@ -30,12 +67,13 @@ $(document).ready(function(){
 
     //writes the image to the screen
     function setUp(){
-        if(charArr.length === 0){
+        if(charArr.length === 0 && gameGoing){
             populateCharArr();
         }
         let rando = Math.floor(Math.random() * charArr.length);
         currentChar = charArr[rando];
         charArr.splice(rando, 1);
+        console.log("charArr: " + charArr);
         for(key in characters){
             if(characters[key].name === currentChar){
                 currentChar = characters[key];
@@ -49,7 +87,17 @@ $(document).ready(function(){
     //sent here when the player guesses the last character correctly
     //when the player pushes start at this point, the game restarts
     function playerWins(){
-        $(".info").html("info: <strong>You win! Press 'Start' to play again!</strong>");
+        $(".timer").html("info: <strong>Game Over</strong>");
+        $(".info").html("final score: <strong> " + wins + "/" + characters.length + " </strong>");
+        $(".characterImage").html("<img src = \"assets/images/end-game.jpg\">");
+        $("img").css("width", "540px");
+        $("img").css("height", "300px");
+        $("img").css("margin-left", "100px");
+        $("img").css("margin-right", "auto");
+        $("img").css("margin-top", "150px");
+        $("img").css("margin-bottom", "auto");
+        
+        
     }
 
     //called when the game starts, takes each character name from the object array
@@ -94,25 +142,32 @@ $(document).ready(function(){
         if(answer === currentChar.name){
             clearInterval(intervalID);
             timerRunning = false;
+            wins += 1;
              if(charArr.length === 0){
-                 playerWins();
+                 gameGoing = false;
+                 $(".info").html("info: <strong>Correct!</strong>");
+                resetVariables(true);
                 }
              else{
-                resetVariables();
+                $(".info").html("info: <strong>Correct!</strong>");
+                resetVariables(true);
              }
         }
         //if the answer is not correct, then the player loses
         else{
+            if(charArr.length === 0){gameGoing = false;}
             clearInterval(intervalID);
             timerRunning = false;
-            $(".info").html("info: <strong>Incorect! You lose :(</strong>");
+            $(".info").html("info: <strong>Incorect! Answer: "+ currentChar.name + "</strong>");
+            resetVariables(false);
         }
 
     }
 
-    function timeUp(){
-        $(".info").html("info: <strong>Time's up. You lose :(</strong>");
-    }
+    /*function timeUp(){
+        $(".info").html("info: <strong>You ran out of time! Correct Answer: "+ currentChar.name + "</strong>");
+        resetVariables(false);
+    }*/
 
     //sets a time interval in which incrementTime is visited every 1 second
     function startTimer(){
@@ -126,9 +181,11 @@ $(document).ready(function(){
         $(".timer").html("time: <strong>" + timeConverter(time) + "</strong>");
         //if the time limits has been reached then the player loses
         if(time === 0){
+            if(charArr.length === 0){gameGoing = false;}
             clearInterval(intervalID);
             timerRunning = false;
-            timeUp();
+            $(".info").html("info: <strong>You ran out of time! Answer: "+ currentChar.name + "</strong>");
+            resetVariables(false);
         }
     }
 
@@ -152,19 +209,31 @@ $(document).ready(function(){
         return minutes + ":" + seconds;
     }
 
-    function resetVariables(){
-        time = timeLimit;
-        $(".info").html("info: ");
-        $(".timer").html("time: <strong>"+ timeConverter(timeLimit) +"</strong>");
-        setUp();
-        startTimer();
-        timerRunning = true;
+    function resetVariables(inp){
+        if(inp){waitTime = 1500;}
+        else{waitTime = 3000;}
+        setTimeout(function(){
+            if(!gameGoing){playerWins();}
+            else{
+                time = timeLimit;
+                $(".info").html("info: ");
+                $(".timer").html("time: <strong>"+ timeConverter(timeLimit) +"</strong>");
+                setUp();
+                startTimer();
+                timerRunning = true;
+            }
+        }, waitTime);
     }
     //when the start button is pressed, and the timer is not running, the game/next round is set into motion.
     $(".next-start").on("click", function(){
-        if(!timerRunning){
-            cameFrom = "start";
-            resetVariables();    
+        if(!timerRunning && !gameGoing){
+            gameGoing = true;
+            time = timeLimit;
+            $(".info").html("info: ");
+            $(".timer").html("time: <strong>"+ timeConverter(timeLimit) +"</strong>");
+            setUp();
+            startTimer();
+            timerRunning = true;  
         }
     })
 })
